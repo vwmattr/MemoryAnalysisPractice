@@ -17,15 +17,11 @@ public class MainActivity extends AppCompatActivity {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.listenerLeak)
-    Button listenerLeakButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
-        listenerLeakButton.setOnClickListener(v -> goToListenerLeakActivity());
     }
 
     @Override
@@ -41,6 +37,12 @@ public class MainActivity extends AppCompatActivity {
     public void goToListenerLeakActivity() {
         Timber.d("ListenerLeak Button Clicked!");
         startActivity(new Intent(this, ListenerLeakActivity.class));
+    }
+
+    @OnClick(R.id.asyncLeak)
+    public void goToAsyncInnerLeakActivity() {
+        Timber.d("Async Leak Button Clicked!");
+        startActivity(new Intent(this, AsyncTaskLeakActivity.class));
     }
 
 }
