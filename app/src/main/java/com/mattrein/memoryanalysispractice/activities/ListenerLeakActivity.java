@@ -19,6 +19,9 @@ import static butterknife.ButterKnife.bind;
 /**
  * This Activity registers as a listener with the LocationManager but never unregisters, and so
  * causes a memory leak of this Activity.
+ *
+ * Most of this code was borrowed from :
+ * https://medium.com/freenet-engineering/memory-leaks-in-android-identify-treat-and-avoid-d0b1233acc8
  */
 public class ListenerLeakActivity extends AppCompatActivity implements LocationListener {
 
@@ -45,6 +48,11 @@ public class ListenerLeakActivity extends AppCompatActivity implements LocationL
         if (unbinder != null) {
             unbinder.unbind();
         }
+
+        //Uncommenting this will remove the memory leak.
+//        if (locationManager != null) {
+//            locationManager.removeUpdates(this);
+//        }
 
         super.onDestroy();
     }
