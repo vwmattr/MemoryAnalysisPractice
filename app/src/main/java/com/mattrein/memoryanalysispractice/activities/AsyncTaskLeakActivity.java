@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import com.mattrein.memoryanalysispractice.R;
 
+import java.lang.ref.WeakReference;
+
 import butterknife.BindView;
 import butterknife.Unbinder;
 import timber.log.Timber;
@@ -61,12 +63,17 @@ public class AsyncTaskLeakActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * This static inner class is better b/c it doesn't have an implicit reference to the enclosing
+     * Activity.  However, it still leaks until we introduce a WeakReference wrapper around the
+     * provided TextView argument to its constructor.
+     */
     private static class StaticBackgroundTask extends AsyncTask<Void, Void, String> {
 
-        private final TextView resultTextView;
+        private final WeakReference<TextView> textViewWeakReference;
 
         public StaticBackgroundTask(TextView resultTextView) {
-            this.resultTextView = resultTextView;
+            this.textViewWeakReference = new WeakReference<>(resultTextView);
         }
 
         @Override
@@ -87,8 +94,13 @@ public class AsyncTaskLeakActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            resultTextView.setText(result);
+            TextView resultTextView = textViewWeakReference.get();
+
+            if (resultTextView != null) {
+                resultTextView.setText(result);
+            }
         }
+
     }
 
     private class LeakyBackgroundTask extends AsyncTask<Void, Void, String> {
